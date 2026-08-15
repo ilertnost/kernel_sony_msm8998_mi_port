@@ -734,7 +734,6 @@ static int32_t msm_actuator_move_focus(
 #define OIS_FACTOR1 140
 #define OIS_FACTOR2 35
 #endif
-#endif
 
 	if ((SENSOR_SUPPORT_OIS_FLAG) && (!strcmp(a_ctrl->pdev->name, "ca0c000.qcom,cci:qcom,actuator@0"))) {
 		if (target_step_pos > 0) {
@@ -749,6 +748,7 @@ static int32_t msm_actuator_move_focus(
 			msm_ois_shift_gain(distance);
 		}
 	}
+#endif
 	CDBG("Exit\n");
 
 	return rc;
