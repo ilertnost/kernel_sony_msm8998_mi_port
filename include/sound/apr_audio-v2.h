@@ -661,7 +661,7 @@ struct adm_cmd_set_pp_params {
 #define ADM_CMD_GET_MTMX_STRTR_DEV_PARAMS_V1	0x00010368
 #define ADM_CMDRSP_GET_MTMX_STRTR_DEV_PARAMS_V1	0x00010369
 
-/* Payload of the #define ADM_CMD_SET_MTMX_STRTR_DEV_PARAMS_V1 command.
+/* Payload of the #defineï¿½ADM_CMD_SET_MTMX_STRTR_DEV_PARAMS_V1 command.
  * If the data_payload_addr_lsw and data_payload_addr_msw element
  * are NULL, a series of struct param_hdr_v3 structures immediately
  * follows, whose total size is payload_size bytes.
@@ -10418,7 +10418,50 @@ struct afe_param_id_clip_bank_sel {
 	/* Number of banks to be read */
 	uint32_t num_banks;
 
-	uint32_t bank_map[AFE_CLIP_MAX_BANKS];
+ 	uint32_t bank_map[AFE_CLIP_MAX_BANKS];
+} __packed;
+
+#define PARAM_ID_SB_CLEARPHASE_HP_TUNING    0x1000201A
+#define PARAM_ID_SB_SFORCE_TUNING           0x1000201B
+#define PARAM_ID_SB_CLEARPHASE_SP_TUNING    0x1000201C
+#define PARAM_ID_SB_XLOUD_TUNING            0x1000201D
+
+#define ASM_MODULE_ID_SONYBUNDLE            0x10002010
+
+#define PARAM_ID_SB_COMMON_USER_PARAM       0x10002011
+#define PARAM_ID_SB_DYNAMICNORMALIZER_USER_PARAM 0x10002012
+#define PARAM_ID_SB_SFORCE_USER_PARAM       0x10002013
+#define PARAM_ID_SB_VPT20_USER_PARAM        0x10002014
+#define PARAM_ID_SB_CLEARPHASE_HP_USER_PARAM 0x10002015
+#define PARAM_ID_SB_CLEARAUDIO_USER_PARAM   0x10002016
+#define PARAM_ID_SB_CLEARAUDIO_VOLUME_PARAM 0x10002017
+#define PARAM_ID_SB_CLEARPHASE_SP_USER_PARAM 0x10002018
+#define PARAM_ID_SB_XLOUD_USER_PARAM        0x10002019
+
+#define ASM_STREAM_POSTPROC_TOPO_ID_SONY    0x10002101
+
+struct clearphase_hp_tuning_params {
+	unsigned char coefs[2064];
+} __packed;
+
+struct s_force_tuning_params {
+	unsigned char coefs[1016];
+} __packed;
+
+struct clearphase_sp_tuning_params {
+	unsigned char coefs[2360];
+} __packed;
+
+struct xloud_tuning_params {
+	unsigned int level;
+	unsigned char coefs[512];
+} __packed;
+
+struct adm_param_data_v5 {
+	u32                  module_id;
+	u32                  param_id;
+	u16                  param_size;
+	u16                  reserved;
 } __packed;
 
 /* ERROR CODES */
@@ -10685,7 +10728,7 @@ struct afe_clk_set {
 	 * for enable and disable clock.
 	 *	"clk_freq_in_hz", "clk_attri", and "clk_root"
 	 *	are ignored in disable clock case.
-	 *	@values 
+	 *	@valuesï¿½
 	 *	- 0 -- Disabled
 	 *	- 1 -- Enabled  @tablebulletend
 	 */

@@ -99,4 +99,7 @@ obj-$(CONFIG_TOUCHSCREEN_TPS6507X)	+= tps6507x-ts.o
 obj-$(CONFIG_TOUCHSCREEN_ZFORCE)	+= zforce_ts.o
 obj-$(CONFIG_TOUCHSCREEN_COLIBRI_VF50)	+= colibri-vf50-ts.o
 obj-$(CONFIG_TOUCHSCREEN_ROHM_BU21023)	+= rohm_bu21023.o
+obj-$(CONFIG_TOUCHSCREEN_CLEARPAD)	+= clearpad_core.o
+obj-$(CONFIG_TOUCHSCREEN_CLEARPAD_I2C)	+= clearpad_i2c.o
+obj-$(CONFIG_TOUCHSCREEN_CLEARPAD_RMI_DEV)	+= clearpad_rmi_dev.o
 obj-$(CONFIG_TOUCHSCREEN_ST)		+= st/

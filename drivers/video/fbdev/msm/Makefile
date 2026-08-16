@@ -21,6 +21,7 @@ mdss-mdp-objs += mdss_smmu.o
 mdss-mdp-objs += mdss_mdp_wfd.o
 obj-$(CONFIG_FB_MSM_MDSS) += mdss-mdp.o
 obj-$(CONFIG_FB_MSM_MDSS) += mdss_mdp_debug.o
+obj-$(CONFIG_FB_MSM_MDSS) += incell.o
 
 mdss-mdp-objs += mdss_mdp_pp_v1_7.o
 mdss-mdp-objs += mdss_mdp_pp_v3.o
@@ -33,6 +34,8 @@ endif
 
 mdss-dsi-objs := mdss_dsi.o mdss_dsi_host.o mdss_dsi_cmd.o mdss_dsi_status.o
 mdss-dsi-objs += mdss_dsi_panel.o
+mdss-dsi-objs += mdss_dsi_panel_driver.o
+mdss-dsi-objs += mdss_dsi_panel_debugfs.o
 mdss-dsi-objs += msm_mdss_io_8974.o
 mdss-dsi-objs += mdss_dsi_phy.o
 mdss-dsi-objs += mdss_dsi_phy_v3.o

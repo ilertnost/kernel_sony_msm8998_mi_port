@@ -1,5 +1,4 @@
 /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -10,6 +9,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+ */
+/*
+ * NOTE: This file has been modified by Sony Mobile Communications Inc.
+ * Modifications are Copyright (c) 2017 Sony Mobile Communications Inc,
+ * and licensed under the license of the file.
  */
 
 #ifndef MDSS_DSI_H
@@ -376,6 +380,10 @@ struct dsi_pinctrl_res {
 	struct pinctrl *pinctrl;
 	struct pinctrl_state *gpio_state_active;
 	struct pinctrl_state *gpio_state_suspend;
+#ifdef CONFIG_FB_MSM_MDSS_SPECIFIC_PANEL
+	struct pinctrl_state *touch_state_active;
+	struct pinctrl_state *touch_state_suspend;
+#endif /* CONFIG_FB_MSM_MDSS_SPECIFIC_PANEL */
 };
 
 struct panel_horizontal_idle {
@@ -592,19 +600,9 @@ struct mdss_dsi_ctrl_pdata {
 	bool update_phy_timing; /* flag to recalculate PHY timings */
 
 	bool phy_power_off;
-	
-#ifdef CONFIG_MACH_XIAOMI
-	bool dsi_panel_off_mode;
-	int tp_rst_gpio;
-	u32 bklt_level;
-
-	struct dsi_panel_cmds dispparam_dimmingon_cmds;
-	struct dsi_panel_cmds displayoff_cmds;
-	struct dsi_panel_cmds displayon_cmds;
-
-	struct delayed_work cmds_work;
-	struct delayed_work panel_dead_report_work;
-#endif
+#ifdef CONFIG_FB_MSM_MDSS_SPECIFIC_PANEL
+	struct mdss_panel_specific_pdata *spec_pdata;
+#endif /* CONFIG_FB_MSM_MDSS_SPECIFIC_PANEL */
 };
 
 struct dsi_status_data {

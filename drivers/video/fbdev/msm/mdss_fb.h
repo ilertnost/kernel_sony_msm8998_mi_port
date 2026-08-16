@@ -1,5 +1,4 @@
 /* Copyright (c) 2008-2020, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -10,6 +9,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+ */
+/*
+ * NOTE: This file has been modified by Sony Mobile Communications Inc.
+ * Modifications are Copyright (c) 2017 Sony Mobile Communications Inc,
+ * and licensed under the license of the file.
  */
 
 #ifndef MDSS_FB_H
@@ -57,6 +61,13 @@
 
 #define MDP_PP_AD_BL_LINEAR	0x0
 #define MDP_PP_AD_BL_LINEAR_INV	0x1
+
+/* Enables Sonys feature Early Unblank for quick wakeup */
+#define SOMC_FEATURE_EARLY_UNBLANK
+
+#ifdef SOMC_FEATURE_EARLY_UNBLANK
+#include <linux/workqueue.h>
+#endif /* SOMC_FEATURE_EARLY_UNBLANK */
 
 /**
  * enum mdp_notify_event - Different frame events to indicate frame update state
@@ -267,6 +278,12 @@ struct msm_fb_fps_info {
 	u32 measured_fps;
 };
 
+#ifdef CONFIG_FB_MSM_MDSS_SPECIFIC_PANEL
+struct fb_specific_data {
+	bool off_sts;
+};
+#endif /* CONFIG_FB_MSM_MDSS_SPECIFIC_PANEL */
+
 struct msm_fb_data_type {
 	u32 key;
 	u32 index;
@@ -340,10 +357,6 @@ struct msm_fb_data_type {
 	struct task_struct *disp_thread;
 	atomic_t commits_pending;
 	atomic_t kickoff_pending;
-#ifdef CONFIG_MACH_XIAOMI
-	atomic_t resume_pending;
-	wait_queue_head_t resume_wait_q;
-#endif
 	wait_queue_head_t commit_wait_q;
 	wait_queue_head_t idle_wait_q;
 	wait_queue_head_t kickoff_wait_q;
@@ -380,6 +393,19 @@ struct msm_fb_data_type {
 	bool pending_switch;
 	struct mutex switch_lock;
 	struct input_handler *input_handler;
+
+#ifdef CONFIG_FB_MSM_MDSS_SPECIFIC_PANEL
+	struct fb_specific_data spec_mfd;
+#endif /* CONFIG_FB_MSM_MDSS_SPECIFIC_PANEL */
+#ifdef SOMC_FEATURE_EARLY_UNBLANK
+	/* speed up wakeup */
+	/* do unblank (>150ms) on own kworker
+	 * so we don't starve other works
+	 */
+	struct workqueue_struct *unblank_kworker;
+	struct work_struct unblank_work;
+	bool early_unblank_completed;
+#endif /* SOMC_FEATURE_EARLY_UNBLANK */
 };
 
 static inline void mdss_fb_update_notify_update(struct msm_fb_data_type *mfd)

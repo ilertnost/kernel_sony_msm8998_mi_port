@@ -162,6 +162,9 @@ struct fb_cursor_user {
 #define FB_EARLY_EVENT_BLANK		0x10
 /*      A hardware display blank revert early change occured */
 #define FB_R_EARLY_EVENT_BLANK		0x11
+/*      A hardware display extended blank change occured */
+#define FB_EXT_EARLY_EVENT_BLANK	0xF0
+#define FB_EXT_EVENT_BLANK		0xF1
 
 struct fb_event {
 	struct fb_info *info;

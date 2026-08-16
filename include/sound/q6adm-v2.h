@@ -118,6 +118,9 @@ int adm_send_params_v5(int port_id, int copp_idx, char *params,
 int adm_dolby_dap_send_params(int port_id, int copp_idx, char *params,
 			      uint32_t params_length);
 
+int adm_ahc_send_params(int port_id, int copp_idx, char *params,
+			uint32_t params_length);
+
 int adm_set_pp_params(int port_id, int copp_idx,
 		      struct mem_mapping_hdr *mem_hdr, u8 *param_data,
 		      u32 params_size);

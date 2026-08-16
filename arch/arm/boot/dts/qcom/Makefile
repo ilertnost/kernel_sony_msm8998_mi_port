@@ -328,11 +328,25 @@ dtb-$(CONFIG_ARCH_SDM630) += sdm630-rumi.dtb \
 	sdm630-headset-jacktype-no-rcm.dtb \
 	sdm630-pm660a-headset-jacktype-no-cdp.dtb \
 	sdm630-pm660a-headset-jacktype-no-rcm.dtb \
-	sdm455-mtp.dtb \
-	sdm455-qrd.dtb \
-	sdm455-cdp.dtb \
-	sdm455-rcm.dtb \
-	sdm455-internal-codec-rcm.dtb
+ 	sdm455-mtp.dtb \
+ 	sdm455-qrd.dtb \
+ 	sdm455-cdp.dtb \
+ 	sdm455-rcm.dtb \
+ 	sdm455-internal-codec-rcm.dtb
+
+dtb-$(CONFIG_MACH_SONY_MAPLE_DSDS) += msm8998-v2.1-yoshino-maple_dsds.dtb \
+	msm8998-yoshino-maple_dsds.dtb
+dtb-$(CONFIG_MACH_SONY_MAPLE_DCM) += msm8998-yoshino-maple_dcm.dtb \
+	msm8998-v2-yoshino-maple_dcm.dtb \
+	msm8998-v2.1-yoshino-maple_dcm.dtb
+dtb-$(CONFIG_MACH_SONY_POPLAR) += msm8998-yoshino-poplar_generic.dtb \
+	msm8998-v2-yoshino-poplar_generic.dtb \
+	msm8998-v2.1-yoshino-poplar_generic.dtb
+dtb-$(CONFIG_MACH_SONY_POPLAR_DCM) += msm8998-v2.1-yoshino-poplar_dcm.dtb
+dtb-$(CONFIG_MACH_SONY_LILAC) += msm8998-yoshino-lilac_generic.dtb \
+	msm8998-v2-yoshino-lilac_generic.dtb \
+	msm8998-v2.1-yoshino-lilac_generic.dtb
+dtb-$(CONFIG_MACH_SONY_LILAC_DCM) += msm8998-v2.1-yoshino-lilac_dcm.dtb
 
 ifeq ($(CONFIG_ARM64),y)
 always          := $(dtb-y)
