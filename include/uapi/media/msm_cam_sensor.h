@@ -1,3 +1,8 @@
+/*
+ * NOTE: This file has been modified by Sony Mobile Communications Inc.
+ * Modifications are Copyright (c) 2016 Sony Mobile Communications Inc,
+ * and licensed under the license of the file.
+ */
 #ifndef __UAPI_LINUX_MSM_CAM_SENSOR_H
 #define __UAPI_LINUX_MSM_CAM_SENSOR_H
 
@@ -242,14 +247,6 @@ struct sensorb_cfg_data {
 	} cfg;
 };
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-struct sensorb_info_fusion_id {
-	char sensor_type;
-	char *data_buffer;
-	char data_nums;
-};
-#endif
-
 struct csid_cfg_data {
 	enum csid_cfg_type_t cfgtype;
 	union {
@@ -365,9 +362,6 @@ enum msm_sensor_cfg_type_t {
 	CFG_WRITE_I2C_ARRAY_ASYNC,
 	CFG_WRITE_I2C_ARRAY_SYNC,
 	CFG_WRITE_I2C_ARRAY_SYNC_BLOCK,
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	CFG_GET_SENSOR_FUSION_ID,
-#endif
 };
 
 enum msm_actuator_cfg_type_t {
@@ -593,6 +587,16 @@ struct sensor_init_cfg_data {
 	} cfg;
 };
 
+/* extension begin */
+#define SENSOR_EVENT_BASE           (V4L2_EVENT_PRIVATE_START)
+#define SENSOR_EVENT_SOF            (SENSOR_EVENT_BASE + 0)
+
+struct msm_sensor_event_data {
+	uint32_t sof_count;
+	struct timeval mono_timestamp;
+};
+/* extension end */
+
 #define VIDIOC_MSM_SENSOR_CFG \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 1, struct sensorb_cfg_data)
 
@@ -640,14 +644,6 @@ struct sensor_init_cfg_data {
 
 #define VIDIOC_MSM_IR_CUT_CFG \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 15, struct msm_ir_cut_cfg_data_t)
-
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-#define VIDIOC_MSM_READ_FUSION_ID \
-	_IOWR('V', BASE_VIDIOC_PRIVATE + 16, struct sensorb_info_fusion_id)
-
-#define VIDIOC_MSM_READ_FUSION_ID_LEN \
-	_IOR('V', BASE_VIDIOC_PRIVATE + 16, uint8_t)
-#endif
 
 #define VIDIOC_MSM_LASER_LED_CFG \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 16, struct msm_laser_led_cfg_data_t)

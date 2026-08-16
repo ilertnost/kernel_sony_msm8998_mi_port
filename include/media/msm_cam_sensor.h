@@ -1,3 +1,8 @@
+/*
+ * NOTE: This file has been modified by Sony Mobile Communications Inc.
+ * Modifications are Copyright (c) 2016 Sony Mobile Communications Inc,
+ * and licensed under the license of the file.
+ */
 #ifndef __LINUX_MSM_CAM_SENSOR_H
 #define __LINUX_MSM_CAM_SENSOR_H
 
@@ -122,6 +127,9 @@ struct msm_eeprom_cfg_data32 {
 };
 
 struct msm_camera_i2c_seq_reg_setting32 {
+/* extension begin */
+	uint16_t slave_addr;
+/* extension end */
 	compat_uptr_t reg_setting;
 	uint16_t size;
 	enum msm_camera_i2c_reg_addr_type addr_type;
@@ -216,14 +224,6 @@ struct sensorb_cfg_data32 {
 	} cfg;
 };
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-struct sensorb_info_fusion_id32 {
-	char sensor_type;
-	compat_uptr_t data_buffer;
-	char data_nums;
-};
-#endif
-
 struct msm_ois_params_t32 {
 	uint16_t data_size;
 	uint16_t setting_size;
@@ -264,6 +264,13 @@ struct msm_flash_cfg_data_t32 {
 	} cfg;
 };
 
+/* extension begin */
+struct msm_sensor_event_data32 {
+	uint32_t sof_count;
+	struct compat_timeval mono_timestamp;
+};
+/* extension end */
+
 #define VIDIOC_MSM_ACTUATOR_CFG32 \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 6, struct msm_actuator_cfg_data32)
 
@@ -296,11 +303,6 @@ struct msm_flash_cfg_data_t32 {
 
 #define VIDIOC_MSM_LASER_LED_CFG32 \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 16, struct msm_laser_led_cfg_data_t32)
-
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-#define VIDIOC_MSM_READ_FUSION_ID32 \
-	_IOWR('V', BASE_VIDIOC_PRIVATE + 16, struct sensorb_info_fusion_id32)
-#endif
 
 #endif
 
