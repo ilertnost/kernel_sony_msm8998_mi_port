@@ -1419,11 +1419,7 @@ static int msm_ispif_stop_frame_boundary(struct ispif_device *ispif,
 		rc = readl_poll_timeout(ispif->base + intf_addr, stop_flag,
 					(stop_flag & 0xF) == 0xF,
 					ISPIF_TIMEOUT_SLEEP_US,
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-					(params->reserved_param ? params->reserved_param : ISPIF_TIMEOUT_ALL_US));
-#else
 					ISPIF_TIMEOUT_ALL_US);
-#endif
 		if (rc < 0)
 			goto end;
 		if (cid_right_mask) {
@@ -1625,7 +1621,11 @@ static inline void msm_ispif_read_irq_status(struct ispif_irq_status *out,
 
 		ispif_process_irq(ispif, out, VFE0);
 	}
+#if defined(CONFIG_SONY_CAM_V4L2)
+	if (ispif->vfe_info.num_vfe > 1) {
+#else
 	if (ispif->hw_num_isps > 1) {
+#endif
 		if (out[VFE1].ispifIrqStatus0 & RESET_DONE_IRQ) {
 			if (atomic_dec_and_test(&ispif->reset_trig[VFE1]))
 				complete(&ispif->reset_complete[VFE1]);
@@ -2042,6 +2042,9 @@ static int ispif_probe(struct platform_device *pdev)
 			ispif->hw_num_isps = 1;
 		/* not an error condition */
 		rc = 0;
+#if defined(CONFIG_SONY_CAM_V4L2)
+		ispif->vfe_info.num_vfe = ispif->hw_num_isps;
+#endif
 	}
 
 	rc = msm_ispif_get_regulator_info(ispif, pdev);
