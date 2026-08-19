@@ -207,6 +207,7 @@ struct msm_pinctrl_info {
 struct msm_asoc_mach_data {
 	u32 mclk_freq;
 	int us_euro_gpio; /* used by gpio driver API */
+	int ear_en_gpio;
 	struct device_node *us_euro_gpio_p; /* used by pinctrl API */
 	struct device_node *hph_en1_gpio_p; /* used by pinctrl API */
 	struct device_node *hph_en0_gpio_p; /* used by pinctrl API */
@@ -540,6 +541,7 @@ static unsigned int tdm_tx_slot_offset
 	}
 };
 static int msm_vi_feed_tx_ch = 2;
+static int ear_enable_states;
 static const char *const slim_rx_ch_text[] = {"One", "Two", "Three", "Four",
 						"Five", "Six", "Seven",
 						"Eight"};
@@ -591,6 +593,8 @@ static const char *const mi2s_ch_text[] = {"One", "Two", "Three", "Four",
 					   "Five", "Six", "Seven",
 					   "Eight"};
 static const char *const hifi_text[] = {"Off", "On"};
+static const char *const ear_enable_states_text[] = {"Disable", "Enable"};
+static SOC_ENUM_SINGLE_EXT_DECL(ear_enable_state, ear_enable_states_text);
 
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
 static const char *const ras_switch_text[] = {"None", "Speaker", "Receiver"};
@@ -723,8 +727,8 @@ static struct wcd_mbhc_config wcd_mbhc_cfg = {
 	.moisture_en = true, 
 #endif
 	.mbhc_micbias = MIC_BIAS_2,
-	.anc_micbias = MIC_BIAS_2,
-	.enable_anc_mic_detect = false,
+	.anc_micbias = MIC_BIAS_3,
+	.enable_anc_mic_detect = true,
 };
 
 static struct snd_soc_dapm_route wcd_audio_paths_tasha[] = {
@@ -3192,6 +3196,61 @@ static int msm_hifi_put(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
+static int ear_enable_get(struct snd_kcontrol *kcontrol,
+	struct snd_ctl_elem_value *ucontrol)
+{
+	int gpio_state = 0;
+
+	switch (ear_enable_states) {
+	case 1:
+		gpio_state = 1;
+		break;
+	case 0:
+	default:
+		gpio_state = 0;
+		break;
+	}
+
+	ucontrol->value.integer.value[0] = gpio_state;
+	pr_debug("%s: ear_enable_states = %d\n", __func__,
+			ear_enable_states);
+
+	return 0;
+}
+
+static int ear_enable_put(struct snd_kcontrol *kcontrol,
+	struct snd_ctl_elem_value *ucontrol)
+{
+	int ret;
+	struct snd_soc_card *card = platform_get_drvdata(spdev);
+	struct msm_asoc_mach_data *pdata = snd_soc_card_get_drvdata(card);
+
+	pr_debug("%s: ucontrol value = %ld\n", __func__,
+			ucontrol->value.integer.value[0]);
+
+	if (pdata->ear_en_gpio >= 0) {
+		ret = gpio_request(pdata->ear_en_gpio, "ear_en_gpio");
+		if (ret) {
+			pr_err("%s: request ear_en_gpio failed, ret:%d\n",
+				__func__, ret);
+			return ret;
+		}
+		switch (ucontrol->value.integer.value[0]) {
+		case 1:
+			gpio_set_value(pdata->ear_en_gpio, 1);
+			break;
+		case 0:
+		default:
+			gpio_set_value(pdata->ear_en_gpio, 0);
+			break;
+		}
+		gpio_free(pdata->ear_en_gpio);
+		ear_enable_states = ucontrol->value.integer.value[0];
+	}
+
+	return 0;
+}
+
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
 static int ras_switch_get(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
@@ -3860,6 +3919,9 @@ static const struct snd_kcontrol_new msm_snd_controls[] = {
 			msm_mi2s_tx_format_get, msm_mi2s_tx_format_put),
 	SOC_ENUM_EXT("HiFi Function", hifi_function, msm_hifi_get,
 			msm_hifi_put),
+	SOC_ENUM_EXT("Ear_Enable_States", ear_enable_state,
+		ear_enable_get,
+		ear_enable_put),
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
 	SOC_ENUM_EXT("RAS Switch", ras_switch,
 			ras_switch_get, ras_switch_put),
@@ -9904,6 +9966,17 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 	usbhs_init(pdev);
 #endif
 
+	/* Parse EAR_EN info for NX5L2750C */
+	pdata->ear_en_gpio = of_get_named_gpio(pdev->dev.of_node,
+				"qcom,ear-en-gpios", 0);
+	if (pdata->ear_en_gpio < 0) {
+		dev_err(&pdev->dev, "property %s not detected in node %s",
+			"qcom,ear-en-gpios",
+			pdev->dev.of_node->full_name);
+		ret = -ENODEV;
+		goto err;
+	}
+
 	return 0;
 err:
 	if (pdata->us_euro_gpio > 0) {
@@ -9911,6 +9984,11 @@ err:
 			__func__, pdata->us_euro_gpio);
 		gpio_free(pdata->us_euro_gpio);
 		pdata->us_euro_gpio = 0;
+	}
+	if (pdata->ear_en_gpio > 0) {
+		dev_dbg(&pdev->dev, "%s initialize ear_en gpio %d\n",
+			__func__, pdata->ear_en_gpio);
+		pdata->ear_en_gpio = 0;
 	}
 
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
