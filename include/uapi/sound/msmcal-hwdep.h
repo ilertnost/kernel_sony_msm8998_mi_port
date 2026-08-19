@@ -31,5 +31,7 @@ struct wcdcal_ioctl_buffer {
 
 #define SNDRV_CTL_IOCTL_HWDEP_CAL_TYPE \
 	_IOW('U', 0x1, struct wcdcal_ioctl_buffer)
+#define SNDRV_CTL_IOCTL_HWDEP_IS_ANC_INSERT \
+        _IOWR('U', 0x2, int)
 
 #endif /*_CALIB_HWDEP_H*/
